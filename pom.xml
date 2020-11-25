@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -14,18 +15,19 @@
 		<!-- <matsim.version>12.0</matsim.version> -->
 
 		<!-- smapshot release -->
-		<!--<matsim.version>0.13.0-SNAPSHOT</matsim.version>-->
+		<!--<matsim.version>0.13.0-SNAPSHOT</matsim.version> -->
 
 		<!-- weekly release -->
 		<matsim.version>12.0-2019w48-SNAPSHOT</matsim.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+<!-- 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> -->
+<!-- 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding> -->
+<!-- 		<maven.compiler.source>11</maven.compiler.source> -->
+<!-- 		<maven.compiler.target>11</maven.compiler.target> -->
 	</properties>
 
 	<repositories>
-	  <!--Note that in general repositories are not transitive, so they need to be repeated at every level where needed.-->
+		<!--Note that in general repositories are not transitive, so they need 
+			to be repeated at every level where needed. -->
 		<repository>
 			<!-- Geotools is not on Maven central -->
 			<id>osgeo</id>
@@ -38,11 +40,11 @@
 			<id>matsim</id>
 			<url>https://dl.bintray.com/matsim/matsim</url>
 		</repository>
- 		<repository>
+		<repository>
 			<!-- For MATSim snapshots: -->
 			<id>ojo-snapshots</id>
 			<url>https://oss.jfrog.org/libs-snapshot</url>
-		</repository>	
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -54,7 +56,7 @@
 		</dependency>
 
 		<dependency>
-			<!-- Include the JUnit testing library.  Not transitive. -->
+			<!-- Include the JUnit testing library. Not transitive. -->
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.13.1</version>
@@ -62,7 +64,7 @@
 		</dependency>
 
 		<dependency>
-			<!--MATSim test infrastructure.  Not transitive.-->
+			<!--MATSim test infrastructure. Not transitive. -->
 			<groupId>org.matsim</groupId>
 			<artifactId>matsim</artifactId>
 			<type>test-jar</type>
@@ -70,7 +72,8 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!--dependencies from here to where stated below are added as a service; they can be removed if you don't need them-->
+		<!--dependencies from here to where stated below are added as a service; 
+			they can be removed if you don't need them -->
 		<!--to get ExamplesUtils: -->
 		<dependency>
 			<groupId>org.matsim</groupId>
@@ -79,7 +82,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!--some contribs:-->
+		<!--some contribs: -->
 		<dependency>
 			<groupId>org.matsim.contrib</groupId>
 			<artifactId>minibus</artifactId>
@@ -115,8 +118,36 @@
 			<artifactId>bicycle</artifactId>
 			<version>${matsim.version}</version>
 		</dependency>
-		<!--Dependencies from where stated above to here are added as a service; they can be removed if you don't need them-->
+		<!--Dependencies from where stated above to here are added as a service; 
+			they can be removed if you don't need them -->
 
+		<dependency>
+			<groupId>com.github.jbytecode</groupId>
+			<artifactId>RCaller</artifactId>
+			<version>3.0.2</version>
+			<classifier>jar-with-dependencies</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>4.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>drt</artifactId>
+			<version>${matsim.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>23.6-jre</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.4.8</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -143,8 +174,10 @@
 						<configuration>
 							<outputFile>${project.basedir}/${project.build.finalName}.jar</outputFile>
 							<transformers>
-								<!-- This bit sets the main class for the executable jar as you otherwise would with the assembly plugin -->
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<!-- This bit sets the main class for the executable jar as you otherwise 
+									would with the assembly plugin -->
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<manifestEntries>
 										<Main-Class>org.matsim.gui.MATSimGUI</Main-Class>
 										<Specification-Vendor>org.matsim</Specification-Vendor>
@@ -152,8 +185,9 @@
 										<Implementation-Version>${project.version}</Implementation-Version>
 									</manifestEntries>
 								</transformer>
-								<!-- This bit merges the various GeoTools META-INF/services files         -->
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+								<!-- This bit merges the various GeoTools META-INF/services files -->
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
 							</transformers>
 						</configuration>
 					</execution>
