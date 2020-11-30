@@ -63,8 +63,8 @@ import org.matsim.population.CreatePopulation;
  * @author nagel
  *
  */
-public class RunMatsim{
-	private static final String OUTPUT_FOLDER = "target/";
+public class GridSearchRunner{
+	private static final String OUTPUT_FOLDER = "D:/one_line_results/";
 	public static double AlPHA = 1;
 	public static int WAIT_TIME = 500;
 	public static int BETA = 700;
@@ -81,20 +81,46 @@ public class RunMatsim{
 	
 	
 	
-	final public static String RUN_ID = "wait_max_" + WAIT_TIME + "_alpha_" + AlPHA + "_beta_" + BETA;
+	
 	public static void main(String[] args) {
+		
+		
 		CreateNetwork.main(null);
 		CreatePopulation.main(null);
 		CreateDRTStops.main(null);
-		Config config = createStraightLineDRTConfig();
-		Scenario scenario = ScenarioUtils.loadScenario(config) ;
-		Controler controler = new Controler( scenario ) ;
-		addDrtConfigGroup(config, AlPHA, WAIT_TIME, BETA, IS_REJECTION, IS_REBALANCE, SEATS, NUM_OF_VEHICLES, IS_STOP_BASED);
-		controler = DrtControlerCreator.createControlerWithSingleModeDrt(config, false);
-//		controler.addOverridingModule( new OTFVisLiveModule() ) ;
-		controler.run();
+//		int[] waittimes = {100,200,300,400,500,600,700,800,900,1000};
+//		int[] waittimes = {100,200};
+//		int[] waittimes = {300,400};
+//		int[] waittimes = {500,600};
+//		int[] waittimes = {700,800};
+		int[] waittimes = {900,1000};
+//		int[] waittimes = {100};
+//		double[] alphas = {1,1.1};
+//		double[] alphas = {1.2,1.3};
+//		double[] alphas = {1.4,1.5};
+//		double[] alphas = {1};
+		int[] betas = {0,100,200,300,400,500,600,700,800,900,1000};
+//		int[] betas = {0};
+		int[] stopDutarions = {1,2,5,10,20,30,40,50,60};
+
+		
+		for(int waittime:waittimes) {
+			for(int stopDutarion:stopDutarions) {
+				for(int beta:betas) {
+					String RUN_ID = "wait_max_" + waittime + "_alpha_" + 1 + "_beta_" + beta + "_stopDutarion_" + stopDutarion;
+					Config config = createStraightLineDRTConfig(RUN_ID);
+					Scenario scenario = ScenarioUtils.loadScenario(config) ;
+					Controler controler = new Controler( scenario ) ;
+					addDrtConfigGroup(config, 1, waittime, beta, IS_REJECTION, IS_REBALANCE, SEATS, NUM_OF_VEHICLES, IS_STOP_BASED,stopDutarion);
+					controler = DrtControlerCreator.createControlerWithSingleModeDrt(config, false);
+					controler.run();
+				}
+			}
+			
+		}
+		
 	}
-	public static Config createStraightLineDRTConfig() {
+	public static Config createStraightLineDRTConfig(String RUN_ID) {
 		Config config = ConfigUtils.createConfig();
 		config.network().setInputFile(CreateNetwork.NETWORK_OUTPUT_PATH);
 		config.plans().setInputFile(CreatePopulation.POPULATION_OUTPUT_PATH);
@@ -280,7 +306,7 @@ public class RunMatsim{
 	 * 
 	 */
 	public static void addDrtConfigGroup(Config config, double alpha, int waitTime, int beta, boolean isRejection,
-			boolean isReblance, int seats, int numOfVehicles, boolean isStopBased) {
+			boolean isReblance, int seats, int numOfVehicles, boolean isStopBased,int stopDutarion) {
 
 		MultiModeDrtConfigGroup multiDRT = new MultiModeDrtConfigGroup();
 		DrtConfigGroup drtConfigGroup = (DrtConfigGroup) multiDRT.createParameterSet(DrtConfigGroup.GROUP_NAME);
@@ -294,7 +320,7 @@ public class RunMatsim{
 //			drtConfigGroup.setTransitStopFile(CreateDRTStops.STOP_FACILITY_OUTPUT_PATH);
 //			drtConfigGroup.setMaxWalkDistance(500);
 //		}
-		drtConfigGroup.setStopDuration(60.0);
+		drtConfigGroup.setStopDuration(stopDutarion);
 		drtConfigGroup.setOperationalScheme(OperationalScheme.door2door);
 		drtConfigGroup.setMaxTravelTimeAlpha(alpha);
 		drtConfigGroup.setMaxTravelTimeBeta(beta);
