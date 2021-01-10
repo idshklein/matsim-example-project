@@ -4,16 +4,17 @@
 <transitSchedule>
 
 	<transitStops>
-		<stopFacility id="10_11" x="9000.0" y="0.0" isBlocking="false"/>
-		<stopFacility id="11_1" x="10000.0" y="0.0" isBlocking="false"/>
-		<stopFacility id="1_2" x="0.0" y="0.0" isBlocking="false"/>
-		<stopFacility id="2_3" x="1000.0" y="0.0" isBlocking="false"/>
-		<stopFacility id="3_4" x="2000.0" y="0.0" isBlocking="false"/>
-		<stopFacility id="4_5" x="3000.0" y="0.0" isBlocking="false"/>
-		<stopFacility id="5_6" x="4000.0" y="0.0" isBlocking="false"/>
-		<stopFacility id="6_7" x="5000.0" y="0.0" isBlocking="false"/>
-		<stopFacility id="7_8" x="6000.0" y="0.0" isBlocking="false"/>
-		<stopFacility id="8_9" x="7000.0" y="0.0" isBlocking="false"/>
-		<stopFacility id="9_10" x="8000.0" y="0.0" isBlocking="false"/>
+		<stopFacility id="10_11" x="9000.0" y="0.0" linkRefId="10_11" isBlocking="false"/>
+		<stopFacility id="11_12" x="10000.0" y="0.0" linkRefId="11_12" isBlocking="false"/>
+		<stopFacility id="12_1" x="11000.0" y="0.0" linkRefId="12_1" isBlocking="false"/>
+		<stopFacility id="1_2" x="0.0" y="0.0" linkRefId="1_2" isBlocking="false"/>
+		<stopFacility id="2_3" x="1000.0" y="0.0" linkRefId="2_3" isBlocking="false"/>
+		<stopFacility id="3_4" x="2000.0" y="0.0" linkRefId="3_4" isBlocking="false"/>
+		<stopFacility id="4_5" x="3000.0" y="0.0" linkRefId="4_5" isBlocking="false"/>
+		<stopFacility id="5_6" x="4000.0" y="0.0" linkRefId="5_6" isBlocking="false"/>
+		<stopFacility id="6_7" x="5000.0" y="0.0" linkRefId="6_7" isBlocking="false"/>
+		<stopFacility id="7_8" x="6000.0" y="0.0" linkRefId="7_8" isBlocking="false"/>
+		<stopFacility id="8_9" x="7000.0" y="0.0" linkRefId="8_9" isBlocking="false"/>
+		<stopFacility id="9_10" x="8000.0" y="0.0" linkRefId="9_10" isBlocking="false"/>
 	</transitStops>
 </transitSchedule>

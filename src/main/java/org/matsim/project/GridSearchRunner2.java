@@ -53,6 +53,7 @@ import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule;
+import org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule.DefaultPlansRemover;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.drt.CreateDRTStops;
 import org.matsim.network.CreateNetwork;
@@ -65,8 +66,8 @@ import org.matsim.r.RCodeRunner;
  * @author nagel
  *
  */
-public class GridSearchRunner{
-	private static final String OUTPUT_FOLDER = "D:/one_line_results/debug/";
+public class GridSearchRunner2{
+	private static final String OUTPUT_FOLDER = "D:/one_line_results/time_mutation/";
 	public static double AlPHA = 1;
 //	parameter minimal combinations:
 //	stop duration: 1, wait_time: 12, beta: 21
@@ -78,11 +79,11 @@ public class GridSearchRunner{
 //	speculated connection between stop duration and wait_time: wait_time  = (number of agents + 1) * stop duration + 1
 //	speculated connection between beta, wait_time and stop_duration: stop_duration= 9*(beta-wait_time). 9 - all agent besides the first one  
 	
-	public static int STOP_DURATION = 3;
+	public static int STOP_DURATION = 5;
 	
 	
-	public static int WAIT_TIME = 14; 
-//	public static int BETA = 111;
+	public static int WAIT_TIME = 16; 
+	public static int BETA = 61;
 	
 	public static int SEATS = 10;
 	public static int NUM_OF_VEHICLES = 1;
@@ -91,7 +92,7 @@ public class GridSearchRunner{
 	public static boolean IS_STOP_BASED = true;
 	public static boolean IS_SAMPLE_POPULATION = false;
 	public static double SAMPLE_POPUALTION_FACTOR = 0.02;
-	public static int NUM_OF_ITERS = 1;
+	public static int NUM_OF_ITERS = 100;
 	public static double DRT_MARGINAL_UTILITY = -0.18;
 	public static String INPUT_SAV_VEHICLES_FOLDER = "scenarios/straight_line_drt/";
 	public static int NODES_NUM = 12;
@@ -102,6 +103,8 @@ public class GridSearchRunner{
 	public static Date date = new Date();
 	public static boolean RUN_FROM_COORD = true;
 	public static long SUFFIX = date.getTime();
+	public static boolean IS_TIME_MUTATION =true;
+	public static int TIME_MUTATION_FLEX = 3;
 	public static void main(String[] args) {
 		
 		RCodeRunner.codeToRun(NODES_NUM, DISTANCE_BETWEEN_NODES , SPEED_ON_LINKS, CAPACITY_ON_LINKS, NUMBER_OF_LANES, STOP_DURATION);
@@ -109,14 +112,14 @@ public class GridSearchRunner{
 		CreatePopulation.run(RUN_FROM_COORD);
 		CreateDRTStops.main(null);
 		double[] alphas = {AlPHA};
-		int[] betas = {41,37,33,29,25,21,17,13,9,5,4,3};
+		int[] betas = {BETA};
 		double[] waittimes = {WAIT_TIME};
 		int[] stopDutarions = {STOP_DURATION};
 		for(double alpha:alphas) {
 			for(double waittime:waittimes) {
 				for(int stopDutarion:stopDutarions) {
 					for(int beta:betas) {
-						String RUN_ID = "wait_max_" + waittime + "_alpha_" +alpha + "_beta_" + beta + "_stopDutarion_" + stopDutarion +"_" +  SUFFIX;
+						String RUN_ID = "wait_max_" + waittime + "_alpha_" +alpha + "_beta_" + beta + "_stopDutarion_" + stopDutarion +"_itres_"+NUM_OF_ITERS+"_mutation_" +IS_TIME_MUTATION +"_TIME_MUTATION_FLEX_"+TIME_MUTATION_FLEX+"_"+  SUFFIX;
 						Config config = createStraightLineDRTConfig(RUN_ID);
 						Scenario scenario = ScenarioUtils.loadScenario(config) ;
 						Controler controler = new Controler( scenario ) ;
@@ -139,7 +142,7 @@ public class GridSearchRunner{
 		config.controler().setWritePlansInterval(1);
 		config.controler().setEventsFileFormats(EnumSet.of(EventsFileFormat.xml));
 		config.controler().setOutputDirectory(OUTPUT_FOLDER + RUN_ID + "/");
-		config.controler().setOverwriteFileSetting(OverwriteFileSetting.overwriteExistingFiles);
+		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 		config.controler().setFirstIteration(1);
 		config.controler().setLastIteration(NUM_OF_ITERS);
 		config.controler().setMobsim("qsim");
@@ -169,12 +172,13 @@ public class GridSearchRunner{
 		config.subtourModeChoice().setConsiderCarAvailability(true);
 
 		// Add sub-tour mode choice
-		config.timeAllocationMutator().setMutationRange(3600);
+		config.timeAllocationMutator().setMutationRange(TIME_MUTATION_FLEX);
 
 		// Add strategy
 		config.strategy().setMaxAgentPlanMemorySize(5);
 		config.strategy().setFractionOfIterationsToDisableInnovation(0.8);
-
+		
+//		config.strategy().setPlanSelectorForRemoval(DefaultPlansRemover.WorstPlanSelector.toString());
 		// Add strategy - plan selector
 		StrategySettings changeExpStrategy = new StrategySettings();
 		changeExpStrategy.setDisableAfter(-1);
@@ -183,24 +187,23 @@ public class GridSearchRunner{
 		config.strategy().addStrategySettings(changeExpStrategy);
 
 		// Add strategy - time-mutation
-		//				StrategySettings timeMutatorStrategy = new StrategySettings();
-		//				timeMutatorStrategy
-		//						.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.TimeAllocationMutator.toString());
-		//				timeMutatorStrategy.setWeight(0.1);
-		//				config.strategy().addStrategySettings(timeMutatorStrategy);
+		if (IS_TIME_MUTATION) {
+			StrategySettings timeMutatorStrategy = new StrategySettings();
+			timeMutatorStrategy
+			.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.TimeAllocationMutator.toString());
+			timeMutatorStrategy.setWeight(0.1);
+			config.strategy().addStrategySettings(timeMutatorStrategy);	
+		}
+		
 
 		// Add strategy - re-route
-		StrategySettings reRouteStrategy = new StrategySettings();
-		reRouteStrategy.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.ReRoute.toString());
-		reRouteStrategy.setWeight(0.1);
-		config.strategy().addStrategySettings(reRouteStrategy);
 
 		// Add strategy - Sub-tour strategy
-		//				StrategySettings subTourModeChoiceStrategy = new StrategySettings();
-		//				subTourModeChoiceStrategy
-		//						.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.SubtourModeChoice.toString());
-		//				subTourModeChoiceStrategy.setWeight(0.1);
-		//				config.strategy().addStrategySettings(subTourModeChoiceStrategy);
+		StrategySettings subTourModeChoiceStrategy = new StrategySettings();
+		subTourModeChoiceStrategy
+		.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.SubtourModeChoice.toString());
+		subTourModeChoiceStrategy.setWeight(0.1);
+		config.strategy().addStrategySettings(subTourModeChoiceStrategy);
 
 		// add car Availability after adding attributes to popualtion
 		// config.subtourModeChoice().setConsiderCarAvailability(true);

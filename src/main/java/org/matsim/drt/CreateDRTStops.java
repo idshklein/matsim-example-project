@@ -37,6 +37,7 @@ public class CreateDRTStops
 			Coord coord = link.getValue().getFromNode().getCoord();
 			Id<TransitStopFacility> id = Id.create(link.getKey(), TransitStopFacility.class); 
 			TransitStopFacility stop = tsf.createTransitStopFacility(id, coord, false);
+			stop.setLinkId(link.getKey());
 			transitSchedule.addStopFacility(stop);
 		}
 		return transitSchedule;

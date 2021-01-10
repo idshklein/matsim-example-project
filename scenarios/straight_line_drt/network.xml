@@ -11,6 +11,8 @@
 		</node>
 		<node id="11" x="10000.0" y="0.0" >
 		</node>
+		<node id="12" x="11000.0" y="0.0" >
+		</node>
 		<node id="2" x="1000.0" y="0.0" >
 		</node>
 		<node id="3" x="2000.0" y="0.0" >
@@ -34,7 +36,9 @@
 	<links capperiod="01:00:00" effectivecellsize="7.5" effectivelanewidth="3.75">
 		<link id="10_11" from="10" to="11" length="1000.0" freespeed="8.333333333333334" capacity="500.0" permlanes="1.0" oneway="1" modes="bus,car,drt,walk,bike" >
 		</link>
-		<link id="11_1" from="11" to="1" length="10000.0" freespeed="8.333333333333334" capacity="500.0" permlanes="1.0" oneway="1" modes="bus,car,drt,walk,bike" >
+		<link id="11_12" from="11" to="12" length="1000.0" freespeed="8.333333333333334" capacity="500.0" permlanes="1.0" oneway="1" modes="bus,car,drt,walk,bike" >
+		</link>
+		<link id="12_1" from="12" to="1" length="11000.0" freespeed="8.333333333333334" capacity="500.0" permlanes="1.0" oneway="1" modes="bus,car,drt,walk,bike" >
 		</link>
 		<link id="1_2" from="1" to="2" length="1000.0" freespeed="8.333333333333334" capacity="500.0" permlanes="1.0" oneway="1" modes="bus,car,drt,walk,bike" >
 		</link>

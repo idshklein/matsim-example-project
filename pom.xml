@@ -45,6 +45,7 @@
 			<id>ojo-snapshots</id>
 			<url>https://oss.jfrog.org/libs-snapshot</url>
 		</repository>
+	
 	</repositories>
 
 	<dependencies>
@@ -148,6 +149,7 @@
 			<artifactId>httpcore</artifactId>
 			<version>4.4.8</version>
 		</dependency>
+		
 	</dependencies>
 
 	<build>

@@ -31,12 +31,16 @@ public class CreatePopulation
 	public static void main(String[] args)
 	{
 		
+		run(true);
+	}
+	public static void run(boolean parseFromCoord)
+	{
 		Population population = PopulationUtils.createPopulation(ConfigUtils.createConfig());
 		PopulationFactory pf = population.getFactory();
-		population= parsePopulation(population, pf);
+		population= parsePopulation(population, pf,parseFromCoord);
 		new PopulationWriter(population).write(POPULATION_OUTPUT_PATH);
 	}
-	private static Population parsePopulation(Population population, PopulationFactory pf) {
+	private static Population parsePopulation(Population population, PopulationFactory pf, boolean parseFromCoord) {
 
 		CSVReader csvReader = null;
 		try {
@@ -52,12 +56,26 @@ public class CreatePopulation
 				PersonUtils.setSex(person, row[2]);
 //				creating plan and activities
 				Plan plan = pf.createPlan();
-				Id<Link> homeLinkId = Id.createLinkId(row[3] + "_" + (Integer.parseInt(row[3]) + 1));
-				Activity homeActivity = pf.createActivityFromLinkId("home", homeLinkId);
+				Activity homeActivity  = null;
+				Activity workActivity  = null;
+				if(parseFromCoord) {
+					Coord homeCoord = new Coord(Double.parseDouble(row[6]),Double.parseDouble(row[7]));
+					homeActivity = pf.createActivityFromCoord("home", homeCoord);
+					Coord workCoord = new Coord(Double.parseDouble(row[8]),Double.parseDouble(row[9]));
+					workActivity = pf.createActivityFromCoord("work", workCoord);
+				}
+				else {
+					Id<Link> homeLinkId = Id.createLinkId(row[3] + "_" + (Integer.parseInt(row[3]) + 1));
+					homeActivity = pf.createActivityFromLinkId("home", homeLinkId);
+					Id<Link> workLinkId = Id.createLinkId(row[5] + "_" + (Integer.parseInt(row[5]) + 1));
+					workActivity = pf.createActivityFromLinkId("work", workLinkId);
+				}
+//				Id<Link> homeLinkId = Id.createLinkId(row[3] + "_" + (Integer.parseInt(row[3]) + 1));
+//				Activity homeActivity = pf.createActivityFromLinkId("home", homeLinkId);
 				homeActivity.setEndTime(Double.parseDouble(row[4]));
 				Leg leg = pf.createLeg("drt");
-				Id<Link> workLinkId = Id.createLinkId(row[5] + "_" + (Integer.parseInt(row[5]) + 1));
-				Activity workActivity = pf.createActivityFromLinkId("work", workLinkId);
+//				Id<Link> workLinkId = Id.createLinkId(row[5] + "_" + (Integer.parseInt(row[5]) + 1));
+//				Activity workActivity = pf.createActivityFromLinkId("work", workLinkId);
 //				adding activities to plan
 				plan.addActivity(homeActivity);
 				plan.addLeg(leg);

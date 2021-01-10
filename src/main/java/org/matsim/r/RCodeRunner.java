@@ -1,6 +1,11 @@
 package org.matsim.r;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,106 +23,44 @@ import com.github.rcaller.rstuff.RProcessStartUpOptions;
 import com.github.rcaller.scriptengine.RCallerScriptEngine;
 import com.github.rcaller.util.Globals;
 
-public class BasicGraphics {
+public class RCodeRunner {
 
-	public BasicGraphics() {
-		try {
-			Random random = new Random();
-			String pathToRScript = "D:/R-4.0.2/bin/Rscript.exe";
-			String pathToR = "D:/R-4.0.2/bin/R.exe";
-			RCallerOptions options = RCallerOptions.create(pathToRScript, pathToR, FailurePolicy.RETRY_1, 3000l, 100l, RProcessStartUpOptions.create());
-			RCaller caller = RCaller.create(options);
-			RCode code = RCode.create();
-			
-
-			/**
-			 *  We are creating a random data from a normal distribution
-			 * with zero mean and unit variance with size of 100
-			 */
-			double[] data = new double[100];
-
-			for (int i = 0; i < data.length; i++) {
-				data[i] = random.nextGaussian();
-			}
-
-			/**
-			 * We are transferring the double array to R
-			 */
-			code.addDoubleArray("x", data);
-
-			/**
-			 * Adding R Code
-			 */
-			code.addRCode("my.mean<-mean(x)");
-			code.addRCode("my.var<-var(x)");
-			code.addRCode("my.sd<-sd(x)");
-			code.addRCode("my.min<-min(x)");
-			code.addRCode("my.max<-max(x)");
-			code.addRCode("my.standardized<-scale(x)");
-
-			/**
-			 * Combining all of them in a single list() object
-			 */
-			code.addRCode(
-					"my.all<-list(mean=my.mean, variance=my.var, sd=my.sd, min=my.min, max=my.max, std=my.standardized)");
-
-			/**
-			 * We want to handle the list 'my.all'
-			 */
-			caller.setRCode(code);
-			caller.runAndReturnResult("my.all");
-
-			double[] results;
-
-			/**
-			 * Retrieving the 'mean' element of list 'my.all'
-			 */
-			results = caller.getParser().getAsDoubleArray("mean");
-			System.out.println("Mean is " + results[0]);
-
-			/**
-			 * Retrieving the 'variance' element of list 'my.all'
-			 */
-			results = caller.getParser().getAsDoubleArray("variance");
-			System.out.println("Variance is " + results[0]);
-
-			/**
-			 * Retrieving the 'sd' element of list 'my.all'
-			 */
-			results = caller.getParser().getAsDoubleArray("sd");
-			System.out.println("Standard deviation is " + results[0]);
-
-			/**
-			 * Retrieving the 'min' element of list 'my.all'
-			 */
-			results = caller.getParser().getAsDoubleArray("min");
-			System.out.println("Minimum is " + results[0]);
-
-			/**
-			 * Retrieving the 'max' element of list 'my.all'
-			 */
-			results = caller.getParser().getAsDoubleArray("max");
-			System.out.println("Maximum is " + results[0]);
-
-			/**
-			 * Retrieving the 'std' element of list 'my.all'
-			 */
-			results = caller.getParser().getAsDoubleArray("std");
-
-			/**
-			 * Now we are retrieving the standardized form of vector x
-			 */
-			System.out.println("Standardized x is ");
-
-			for (double result : results) {
-				System.out.print(result + ", ");
-			}
-		} catch (Exception e) {
-			Logger.getLogger(BasicGraphics.class.getName()).log(Level.SEVERE, e.getMessage());
-		}
+	public RCodeRunner() {
+		
 	}
 
 	public static void main(String[] args) {
-		new BasicGraphics();
+		codeToRun(0, 0, 0, 0, 0, 0);
+	}
+
+	public static void codeToRun(int nodes_num, int distance_between_nodes, double speed_on_links, int capacity_on_links, int number_of_lanes, int stop_duration)
+	{
+		String pathToRScript = "D:/R-4.0.2/bin/Rscript.exe";
+		String pathToR = "D:/R-4.0.2/bin/R.exe";
+		RCallerOptions options = RCallerOptions.create(pathToRScript, pathToR, FailurePolicy.RETRY_1, 3000l, 100l, RProcessStartUpOptions.create());
+		RCaller caller = RCaller.create(options);
+		RCode code = RCode.create();
+		code.addInt("NODES_NUM", nodes_num);
+		code.addInt("DISTANCE_BETWEEN_NODES", distance_between_nodes);
+		code.addDouble("SPEED_ON_LINKS", speed_on_links);
+		code.addInt("CAPACITY_ON_LINKS", capacity_on_links);
+		code.addInt("NUMBER_OF_LANES", number_of_lanes);
+		code.addInt("STOP_DURATION", stop_duration);
+
+		Path path = FileSystems.getDefault().getPath(System.getProperty("user.dir"), "\\R_scripts\\temp2.R");
+		System.out.println(System.getProperty("user.dir"));
+
+		try
+		{
+			String content = Files.readString(path, StandardCharsets.US_ASCII);
+			System.out.println(content);
+			code.addRCode(content);
+			caller.setRCode(code);
+			caller.runOnly();
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
